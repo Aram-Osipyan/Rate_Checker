@@ -1,0 +1,27 @@
+<Project>
+  <ItemGroup>
+    <PackageVersion Include="Docker.DotNet" Version="3.125.15" />
+    <PackageVersion Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
+    <PackageVersion Include="Selenium.Support" Version="4.11.0" />
+    <PackageVersion Include="Selenium.UndetectedChromeDriver" Version="1.1.1" />
+    <PackageVersion Include="Selenium.WebDriver" Version="4.11.0" />
+    <PackageVersion Include="Selenium.WebDriver.ChromeDriver" Version="116.0.5845.9600" />
+    <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
+    <PackageVersion Include="Npgsql" Version="6.0.5" />
+    <PackageVersion Include="FluentMigrator" Version="3.3.2" />
+    <PackageVersion Include="FluentMigrator.Runner" Version="3.3.2" />
+    <PackageVersion Include="FluentMigrator.Runner.Postgres" Version="3.3.2" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="6.0.0" />
+    <PackageVersion Include="TextExtensions" Version="1.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.6" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageVersion Include="xunit" Version="2.4.1" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.3" />
+    <PackageVersion Include="coverlet.collector" Version="3.1.0" />
+    <PackageVersion Include="RestSharp" Version="110.2.0" />
+    <PackageVersion Include="HtmlAgilityPack" Version="1.11.46" />
+    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+</Project>
