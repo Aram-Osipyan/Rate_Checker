@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System;
 using Microsoft.AspNetCore.Http;
+using RateChecker.SeleniumServices.States;
+using RateChecker.StateMachine;
+using RateChecker.Common;
+using RateChecker.SeleniumServices;
 
 namespace RateChecker;
 public sealed class Startup
@@ -22,7 +26,17 @@ public sealed class Startup
             .AddFluentMigrator(
                 connectionString,
                 typeof(SqlMigration).Assembly);*/
-
+        services
+            .AddSingleton(new AuthenticatorCodeEntering(StateEnum.AuthenticatorCodeEntering))
+            .AddSingleton(new DriverInitialization(StateEnum.DriverInitialization))
+            .AddSingleton(new PasswordEntering(StateEnum.PasswordEntering))
+            .AddSingleton(new CaptureSolving(StateEnum.CaptureSolving))
+            .AddSingleton(new UsernameEntering(StateEnum.UsernameEntering))
+            .AddSingleton(new EmailCodeEntering(StateEnum.EmailCodeEntering))
+            .AddSingleton(new TokenFetching(StateEnum.TokenFetching))
+            .AddScoped<IWebDriverLogin, WebDriverLogin>()
+            .AddSingleton<IStateMachineFactory, StateMachineFactory>();
+            
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();

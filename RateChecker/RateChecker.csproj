@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>97246565-dcae-40ca-a390-5128115bf852</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Docker.DotNet" />
+    <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
     <PackageReference Include="Selenium.Support" />
     <PackageReference Include="Selenium.WebDriver" />
@@ -23,6 +24,8 @@
     <PackageReference Include="HtmlAgilityPack" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Otp.NET" />
+    <PackageReference Include="MailKit" />
   </ItemGroup>
 
 </Project>
