@@ -7,24 +7,11 @@ services:
       context: .
       dockerfile: RateChecker/Dockerfile
     depends_on:
-        - postgres
         - selenoid
     ports:
         - 7035:7035
     networks:
       - selenoid
-
-  postgres:
-    image: postgres:14-alpine
-    ports:
-      - 5432:5432
-    environment:
-      POSTGRES_USER: finana
-      POSTGRES_PASSWORD: finanadbpsword
-      POSTGRES_DB: finanadb
-    volumes:
-      - dbdata:/var/lib/postgresql/newdata4
-    command: -c log_statement=all
 
   selenoid:
     image: aerokube/selenoid:1.11.0

@@ -14,8 +14,8 @@ public class UsernameEntering : State<StateMachineContext, TriggerEnum, StateEnu
     {
         var driver = context.Driver;
         var emailInput = driver.FindElement(By.CssSelector("input#username"));
-        var email = "binancenoviy@gmail.com";
-
+        //var email = "binancenoviy@gmail.com";
+        var email = context.Input.UserName;
 
         emailInput.SendKeys(email);
 
@@ -23,8 +23,7 @@ public class UsernameEntering : State<StateMachineContext, TriggerEnum, StateEnu
 
         nextButton.Click();
 
-
-        await Task.Delay(3000);
+        await Task.Yield();
 
         return TriggerEnum.Success;
     }

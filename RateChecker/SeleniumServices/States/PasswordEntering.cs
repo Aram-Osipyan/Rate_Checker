@@ -24,7 +24,9 @@ public class PasswordEntering : State<StateMachineContext, TriggerEnum, StateEnu
         {
             return d.FindElement(By.CssSelector("input[name=\"password\"]"));
         });
-        var password = "28500Rama56";
+        //var password = "28500Rama56";
+        var password = context.Input.Password;
+
         passwordInput.SendKeys(password);
 
         var loginSubmitBtn = driver.FindElement(By.CssSelector("button#click_login_submit"));

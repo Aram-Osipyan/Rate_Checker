@@ -33,8 +33,9 @@ public class EmailCodeEntering : State<StateMachineContext, TriggerEnum, StateEn
         using (var clientp = new ImapClient())
         {
             await clientp.ConnectAsync("imap.gmail.com", 993, true);
-            await clientp.AuthenticateAsync("binancenoviy@gmail.com", "ttxo bfhg yzlu kbxm");
-            
+            //await clientp.AuthenticateAsync("binancenoviy@gmail.com", "ttxo bfhg yzlu kbxm");
+            await clientp.AuthenticateAsync(context.Input.ImapEmail, context.Input.ImapPassword);
+
             var inbox = clientp.Inbox;
             await inbox.OpenAsync(FolderAccess.ReadWrite);
 
@@ -83,7 +84,7 @@ public class EmailCodeEntering : State<StateMachineContext, TriggerEnum, StateEn
         emailCodeInput.SendKeys(emailCode);
 
         // TODO: wait for page loading
-        //await Task.Delay(10000);
+        await Task.Delay(2000);
 
         return TriggerEnum.Success;
     }

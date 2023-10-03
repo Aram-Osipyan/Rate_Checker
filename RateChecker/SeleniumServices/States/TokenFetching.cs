@@ -4,6 +4,8 @@ using OpenQA.Selenium.Support.UI;
 using RateChecker.Common;
 using RateChecker.StateMachine;
 using SeleniumExtras.WaitHelpers;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.DevTools;
 
 namespace RateChecker.SeleniumServices.States;
 public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
@@ -23,6 +25,8 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
         yesBtn.Click();
 
 
+        await Task.Delay(2000);
+        driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
         await driver.Manage().Network.StartMonitoring();
 
         var ts = new TaskCompletionSource<(string token, string cookie)>();
@@ -41,7 +45,8 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
         };
 
         driver.Manage().Network.NetworkRequestSent += callback;
-        driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
+
+        driver.Navigate().Refresh();
 
         var result = await ts.Task;
 

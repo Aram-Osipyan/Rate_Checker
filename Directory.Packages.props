@@ -1,5 +1,6 @@
 <Project>
   <ItemGroup>
+    <PackageVersion Include="ChromeDevTools" Version="1.1.7" />
     <PackageVersion Include="Docker.DotNet" Version="3.125.15" />
     <PackageVersion Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
     <PackageVersion Include="Google.Protobuf" Version="3.24.3" />

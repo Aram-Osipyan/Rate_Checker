@@ -30,7 +30,9 @@ public class AuthenticatorCodeEntering : State<StateMachineContext, TriggerEnum,
         var authenticatorInput = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("input.bn-textField-input")));
         //var authenticatorInput = wait.Until(d => d.FindElement(By.CssSelector("input.bn-textField-input")));
 
-        var secretKey = "e7JT+GoUeGvk6g==";
+        //var secretKey = "e7JT+GoUeGvk6g==";
+        var secretKey = context.Input.AuthenticatorKey;
+
         var bytes = Convert.FromBase64String(secretKey);
         var totp = new Totp(bytes);
         var totpCode = totp.ComputeTotp();

@@ -4,6 +4,8 @@ using OpenQA.Selenium;
 using RateChecker.Common;
 using RateChecker.StateMachine;
 using RestSharp;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 
 namespace RateChecker.SeleniumServices.States;
 public class CaptureSolving : State<StateMachineContext, TriggerEnum, StateEnum>
@@ -17,14 +19,16 @@ public class CaptureSolving : State<StateMachineContext, TriggerEnum, StateEnum>
         try
         {
             var driver = context.Driver;
+            await Task.Delay(3000);
+            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
 
-            var captureDiv = driver.FindElement(By.CssSelector("div.bcap-image-area-container"));
+            var captureDiv = wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.bcap-image-area-container")));
             var takeScreenshot = ((ITakesScreenshot)captureDiv).GetScreenshot();
-            var captureLabel = driver.FindElement(By.CssSelector("div#tagLabel")).Text;
+            var captureLabel = wait.Until(ExpectedConditions.ElementToBeClickable(driver.FindElement(By.CssSelector("div#tagLabel")))).Text;
             var screenshot = takeScreenshot.AsBase64EncodedString;
 
-            var key = "e4df5792b0ba58cf3c93db834805ab68";
-
+            //var key = "e4df5792b0ba58cf3c93db834805ab68";
+            var key = context.Input.CaptureSolverKey;
             var client = new RestClient("http://api.captcha.guru");
             var request = new RestRequest("in.php", Method.Post);
             request.AlwaysMultipartFormData = true;
@@ -72,10 +76,10 @@ public class CaptureSolving : State<StateMachineContext, TriggerEnum, StateEnum>
                         .Build()
                     .Perform();
 
-                    await Task.Delay(1000);
+                    await Task.Delay(500);
                 }
 
-                var captureButton = driver.FindElement(By.CssSelector("div.bcap-verify-button"));
+                var captureButton = wait.Until(ExpectedConditions.ElementToBeClickable(driver.FindElement(By.CssSelector("div.bcap-verify-button"))));
                 captureButton.Click();
             }
         }

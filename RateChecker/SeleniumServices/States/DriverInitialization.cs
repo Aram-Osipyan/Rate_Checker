@@ -4,10 +4,43 @@ using RateChecker.Common;
 using RateChecker.StateMachine;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using OpenQA.Selenium.Remote;
+using OpenQA.Selenium.DevTools;
+using FluentMigrator.Runner.Versioning;
+using System.Reflection;
 
 namespace RateChecker.SeleniumServices.States;
+internal static class ReflectionExtensions
+{
+    private static IEnumerable<Type> BaseTypes(this Type type)
+    {
+        while (type.BaseType != null)
+        {
+            yield return type.BaseType;
+            type = type.BaseType;
+        }
+    }
+
+    internal static FieldInfo GetFieldInfo(this object value, string memberName, BindingFlags? bindingFlags = null)
+    {
+        bindingFlags ??= BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
+        var type = value.GetType();
+        return new[] { type }.Concat(type.BaseTypes()).Select(t => t.GetField(memberName, bindingFlags.Value)).First(
+            f => f != null);
+    }
+
+    internal static TValue GetFieldValue<TValue>(this object instance, string fieldName) =>
+        instance == null
+            ? throw new ArgumentNullException(nameof(instance))
+            : (TValue)(instance.GetFieldInfo(fieldName)).GetValue(instance);
+
+    internal static void SetFieldValue<TValue>(this object instance, string fieldName, TValue value) =>
+        (instance.GetFieldInfo(fieldName)).SetValue(instance, value);
+}
 public class DriverInitialization : State<StateMachineContext, TriggerEnum, StateEnum>
 {
+
+    
     public DriverInitialization(StateEnum stateEnum) : base(stateEnum)
     {
     }
@@ -43,8 +76,21 @@ public class DriverInitialization : State<StateMachineContext, TriggerEnum, Stat
         options.AddArgument($"--user-agent={userAgent}");
         options.AddAdditionalChromeOption("useAutomationExtension", false);
 
+
+        var caps = new RemoteSessionSettings();
+        caps.AddFirstMatchDriverOption(options);
+
+        var dict = caps.ToDictionary();
         // IWebDriver driver = await Task.Run(() => new RemoteWebDriver(new Uri("http://localhost:4444/wd/hub"), options.ToCapabilities(), TimeSpan.FromMinutes(2)));
-        IWebDriver driver = new ChromeDriver(options);
+        //IWebDriver driver = new ChromeDriver(options);
+        //var driver = new RemoteWebDriver(new Uri("http://selenoid:4444/wd/hub"), options.ToCapabilities(), TimeSpan.FromMinutes(4));
+
+        var driver = new RemoteWebDriver(new Uri("http://selenoid:4444/wd/hub"), caps, TimeSpan.FromMinutes(4));
+
+
+        var capabilitiesDictionary = (driver as WebDriver)?.Capabilities.GetFieldValue<Dictionary<string, object>>("capabilities");
+        //capabilitiesDictionary["se:cdp"] = $"ws://{host}/devtools/{sessionId}/page";
+        capabilitiesDictionary["se:cdpVersion"] = "115.0";
 
         await Task.Run(() => driver.Navigate().GoToUrl("https://accounts.binance.com/en/login?"));
 
