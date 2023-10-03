@@ -50,8 +50,8 @@ public sealed class Startup
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
-
+        //app.UseHttpsRedirection();
+        //app.UseHtt
         app.UseAuthorization();
 
         app.MapControllers();
