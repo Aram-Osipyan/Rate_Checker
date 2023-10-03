@@ -52,8 +52,8 @@ public sealed class Startup
 
         //app.UseHttpsRedirection();
         //app.UseHtt
-        app.UseAuthorization();
-
+        //app.UseAuthorization();
+        
         app.MapControllers();
 
         var accessKey = _configuration["AccessKey"];
