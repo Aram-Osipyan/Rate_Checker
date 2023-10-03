@@ -19,7 +19,7 @@ namespace RateChecker.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] TokenRefreshInput input)
         {
-            var result = await _webDriverLogin.Login();
+            var result = await _webDriverLogin.Login(input);
 
             return new JsonResult(new { Token = result.token, Cookie = result.cookie });
         }
