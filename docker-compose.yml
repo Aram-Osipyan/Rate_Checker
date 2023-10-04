@@ -9,7 +9,7 @@ services:
     depends_on:
         - selenoid
     ports:
-        - 7035:7035
+        - 7035:80
     networks:
       - selenoid
 

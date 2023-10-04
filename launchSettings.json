@@ -5,8 +5,7 @@
       "commandVersion": "1.0",
       "serviceActions": {
         "ratechecker": "StartDebugging"
-      },
-      "applicationUrl": "http://localhost:7035"
+      }
     }
   }
 }

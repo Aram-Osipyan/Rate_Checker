@@ -40,6 +40,7 @@ public sealed class Startup
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+        
     }
 
     public void Configure(WebApplication app, IWebHostEnvironment env, string[] args)
@@ -55,8 +56,7 @@ public sealed class Startup
         //app.UseAuthorization();
         
         app.MapControllers();
-
-        var accessKey = _configuration["AccessKey"];
+       
         RunWithMigrate(app, args);
 
     }
