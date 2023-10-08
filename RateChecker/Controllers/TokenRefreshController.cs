@@ -24,9 +24,16 @@ namespace RateChecker.Controllers
                 var result = await _webDriverLogin.Login(input);
                 return new JsonResult(new { Token = result.token, Cookie = result.cookie });
             }
+            catch (OpenQA.Selenium.DevTools.CommandResponseException ex)
+            {
+                return new JsonResult(new { ex.Message })
+                {
+                    StatusCode = 501
+                };
+            }
             catch (Exception ex)
             {
-                return new JsonResult(new { Message = ex.Message })
+                return new JsonResult(new { ex.Message })
                 {
                     StatusCode = 500
                 };
