@@ -4,7 +4,9 @@
     <PackageVersion Include="Docker.DotNet" Version="3.125.15" />
     <PackageVersion Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
     <PackageVersion Include="Google.Protobuf" Version="3.24.3" />
+    <PackageVersion Include="InfiniSwiss.CdpSharp" Version="1.0.4" />
     <PackageVersion Include="Otp.NET" Version="1.3.0" />
+    <PackageVersion Include="PuppeteerSharp" Version="12.0.0" />
     <PackageVersion Include="Selenium.Support" Version="4.11.0" />
     <PackageVersion Include="Selenium.UndetectedChromeDriver" Version="1.1.1" />
     <PackageVersion Include="Selenium.WebDriver" Version="4.11.0" />

@@ -11,9 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ChromeDevTools" />
     <PackageReference Include="Docker.DotNet" />
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" />
+    <PackageReference Include="InfiniSwiss.CdpSharp" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+    <PackageReference Include="PuppeteerSharp" />
     <PackageReference Include="Selenium.Support" />
     <PackageReference Include="Selenium.WebDriver" />
     <PackageReference Include="System.Linq.Async" />

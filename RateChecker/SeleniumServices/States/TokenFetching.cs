@@ -46,7 +46,7 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
         driver.Manage().Network.NetworkRequestSent += callback;
 
-        driver.Navigate().Refresh();
+        //driver.Navigate().Refresh();
 
         var result = await ts.Task;
 
