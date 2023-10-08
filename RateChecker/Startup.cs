@@ -63,14 +63,7 @@ public sealed class Startup
 
     private static void RunWithMigrate(IHost host, string[] args)
     {
-        if (args.Length > 0 && args[0].Equals("migrate", StringComparison.InvariantCultureIgnoreCase))
-        {
-            using var scope = host.Services.CreateScope();
-            // var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-
-            //runner.MigrateUp();
-        }
-        else
-            host.Run();
+        
+        host.Run();
     }
 }

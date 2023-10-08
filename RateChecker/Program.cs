@@ -10,7 +10,10 @@ var startup = new Startup(builder.Configuration);
 startup.ConfigureServices(builder.Services);
 
 // Add services to the container.
-
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(80);
+});
 var app = builder.Build();
 
 
