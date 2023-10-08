@@ -9,6 +9,7 @@ using RateChecker.SeleniumServices.States;
 using RateChecker.StateMachine;
 using RateChecker.Common;
 using RateChecker.SeleniumServices;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace RateChecker;
 public sealed class Startup
@@ -36,7 +37,7 @@ public sealed class Startup
             .AddSingleton(new TokenFetching(StateEnum.TokenFetching))
             .AddScoped<IWebDriverLogin, WebDriverLogin>()
             .AddSingleton<IStateMachineFactory, StateMachineFactory>();
-            
+        
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -54,9 +55,28 @@ public sealed class Startup
         //app.UseHttpsRedirection();
         //app.UseHtt
         //app.UseAuthorization();
-        
+        app.UseExceptionHandler(appError =>
+        {
+            appError.Run(async context =>
+            {
+                context.Response.StatusCode = 500; // или любой другой код ошибки
+                context.Response.ContentType = "application/json";
+
+                var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+                if (contextFeature != null)
+                {
+                    // Здесь вы можете выполнить любое действие, которое вам нужно.
+                    // Например, записать исключение в журнал или вернуть пользователю сообщение об ошибке.
+                    await context.Response.WriteAsync(new
+                    {
+                        StatusCode = context.Response.StatusCode,
+                        Message = "Internal Server Error."
+                    }.ToString());
+                }
+            });
+        });
         app.MapControllers();
-       
+        
         RunWithMigrate(app, args);
 
     }
