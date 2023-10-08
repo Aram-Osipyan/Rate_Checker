@@ -26,33 +26,41 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
 
         await Task.Delay(2000);
-        driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
-        await driver.Manage().Network.StartMonitoring();
 
-        var ts = new TaskCompletionSource<(string token, string cookie)>();
-        
-
-        void callback (object obj, NetworkRequestSentEventArgs req)
+        try
         {
-            if (req.RequestUrl == "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search")
+            driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
+            await driver.Manage().Network.StartMonitoring();
+
+            var ts = new TaskCompletionSource<(string token, string cookie)>();
+
+
+            void callback(object obj, NetworkRequestSentEventArgs req)
             {
-                var token = req.RequestHeaders["csrftoken"];
-                var cookie = req.RequestHeaders["Cookie"];
+                if (req.RequestUrl == "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search")
+                {
+                    var token = req.RequestHeaders["csrftoken"];
+                    var cookie = req.RequestHeaders["Cookie"];
 
-                driver.Manage().Network.NetworkRequestSent -= callback;
-                ts.SetResult((token, cookie));
-            }
-        };
+                    driver.Manage().Network.NetworkRequestSent -= callback;
+                    ts.SetResult((token, cookie));
+                }
+            };
 
-        driver.Manage().Network.NetworkRequestSent += callback;
+            driver.Manage().Network.NetworkRequestSent += callback;
 
-        //driver.Navigate().Refresh();
+            //driver.Navigate().Refresh();
 
-        var result = await ts.Task;
+            var result = await ts.Task;
 
-        context.Token = result.token;
-        context.Cookie = result.cookie;
+            context.Token = result.token;
+            context.Cookie = result.cookie;
 
-        return TriggerEnum.Success;
+            return TriggerEnum.Success;
+        }
+        catch (Exception)
+        {
+            return TriggerEnum.Failure;
+        }
     }
 }
