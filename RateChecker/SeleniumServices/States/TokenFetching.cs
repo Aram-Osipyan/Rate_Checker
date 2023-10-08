@@ -4,8 +4,6 @@ using OpenQA.Selenium.Support.UI;
 using RateChecker.Common;
 using RateChecker.StateMachine;
 using SeleniumExtras.WaitHelpers;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.DevTools;
 
 namespace RateChecker.SeleniumServices.States;
 public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
@@ -30,7 +28,9 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
         try
         {
             driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
-            await driver.Manage().Network.StartMonitoring();
+
+            var network = driver.Manage().Network;
+            await network.StartMonitoring();
             
             var ts = new TaskCompletionSource<(string token, string cookie)>();
 
@@ -42,19 +42,19 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
                     var token = req.RequestHeaders["csrftoken"];
                     var cookie = req.RequestHeaders["Cookie"];
 
-                    driver.Manage().Network.NetworkRequestSent -= callback;
+                    network.NetworkRequestSent -= callback;
                     ts.SetResult((token, cookie));
                 }
                 
 
             };
 
-            driver.Manage().Network.NetworkRequestSent += callback;
+            network.NetworkRequestSent += callback;
 
             //driver.Navigate().Refresh();
 
             var result = await ts.Task;
-            await driver.Manage().Network.StopMonitoring();
+            await network.StopMonitoring();
             context.Token = result.token;
             context.Cookie = result.cookie;
 
