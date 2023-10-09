@@ -45,8 +45,6 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
                     var cookie = req.RequestHeaders["Cookie"];
 
                     network.ClearRequestHandlers();
-                    network.StopMonitoring().Wait();
-
                     ts.TrySetResult((token, cookie));
                 }
             };
