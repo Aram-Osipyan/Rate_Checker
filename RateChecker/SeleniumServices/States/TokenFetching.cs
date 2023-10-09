@@ -30,7 +30,7 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
             driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
 
             var network = driver.Manage().Network;
-            await network.StartMonitoring();
+            network.StartMonitoring().Wait();
             
             var ts = new TaskCompletionSource<(string token, string cookie)>();
 
@@ -42,11 +42,8 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
                     var token = req.RequestHeaders["csrftoken"];
                     var cookie = req.RequestHeaders["Cookie"];
 
-                    network.NetworkRequestSent -= callback;
-                    ts.SetResult((token, cookie));
+                    ts.TrySetResult((token, cookie));
                 }
-                
-
             };
 
             network.NetworkRequestSent += callback;
@@ -54,7 +51,9 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
             //driver.Navigate().Refresh();
 
             var result = await ts.Task;
-            await network.StopMonitoring();
+
+            network.StopMonitoring().Wait();
+
             context.Token = result.token;
             context.Cookie = result.cookie;
 
