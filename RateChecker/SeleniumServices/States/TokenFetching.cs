@@ -30,6 +30,7 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
         try
         {
 
+            var fetchAdapter = new FetchAdapter((driver as RemoteWebDriver).GetDevToolsSession());
 
             var network = driver.Manage().Network;
             network.StartMonitoring().Wait();
@@ -48,6 +49,10 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
                     ts.TrySetResult((token, cookie));
                 }
+                fetchAdapter.ContinueRequest(new ContinueRequestCommandSettings
+                {
+                    RequestId = req.RequestId,
+                }) ;
             };
 
             network.NetworkRequestSent += callback;
@@ -59,7 +64,6 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
             network.StopMonitoring().Wait();
             driver.Close();
 
-            await Task.Delay(5000);
             context.Token = result.token;
             context.Cookie = result.cookie;
 
