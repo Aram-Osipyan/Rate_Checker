@@ -1,5 +1,7 @@
 ﻿using Docker.DotNet.Models;
 using OpenQA.Selenium;
+using OpenQA.Selenium.DevTools.V115.Fetch;
+using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
 using RateChecker.Common;
 using RateChecker.StateMachine;
@@ -27,7 +29,7 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
         try
         {
-            
+
 
             var network = driver.Manage().Network;
             network.StartMonitoring().Wait();
@@ -57,6 +59,7 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
             network.StopMonitoring().Wait();
             driver.Close();
 
+            await Task.Delay(5000);
             context.Token = result.token;
             context.Cookie = result.cookie;
 
