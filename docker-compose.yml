@@ -12,6 +12,7 @@ services:
         - 7035:80
     networks:
       - selenoid
+    restart: always
 
   selenoid:
     image: aerokube/selenoid:1.11.0
