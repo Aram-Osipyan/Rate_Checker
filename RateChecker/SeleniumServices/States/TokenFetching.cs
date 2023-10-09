@@ -42,9 +42,7 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
                 {
                     var token = req.RequestHeaders["csrftoken"];
                     var cookie = req.RequestHeaders["Cookie"];
-                    network.ClearRequestHandlers();
-                    network.StopMonitoring().Wait();
-                    driver.Close();
+                    
 
                     ts.TrySetResult((token, cookie));
                 }
@@ -55,6 +53,9 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
             //driver.Navigate().Refresh();
 
             var result = await ts.Task;
+            network.ClearRequestHandlers();
+            network.StopMonitoring().Wait();
+            driver.Close();
 
             context.Token = result.token;
             context.Cookie = result.cookie;
