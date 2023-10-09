@@ -30,8 +30,6 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
         try
         {
 
-            var fetchAdapter = new FetchAdapter((driver as RemoteWebDriver).GetDevToolsSession());
-
             var network = driver.Manage().Network;
             network.StartMonitoring().Wait();
             driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
@@ -45,14 +43,12 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
                 {
                     var token = req.RequestHeaders["csrftoken"];
                     var cookie = req.RequestHeaders["Cookie"];
-                    
+
+                    network.ClearRequestHandlers();
+                    network.StopMonitoring().Wait();
 
                     ts.TrySetResult((token, cookie));
                 }
-                fetchAdapter.ContinueRequest(new ContinueRequestCommandSettings
-                {
-                    RequestId = req.RequestId,
-                }) ;
             };
 
             network.NetworkRequestSent += callback;
@@ -60,9 +56,7 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
             //driver.Navigate().Refresh();
 
             var result = await ts.Task;
-            network.ClearRequestHandlers();
-            network.StopMonitoring().Wait();
-            driver.Close();
+            await Task.Delay(10000);
 
             context.Token = result.token;
             context.Cookie = result.cookie;
