@@ -27,11 +27,12 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
         try
         {
-            driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
+            
 
             var network = driver.Manage().Network;
             network.StartMonitoring().Wait();
-            
+            driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
+
             var ts = new TaskCompletionSource<(string token, string cookie)>();
 
 
