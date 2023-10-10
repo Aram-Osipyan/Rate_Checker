@@ -56,7 +56,7 @@ public class DriverInitialization : State<StateMachineContext, TriggerEnum, Stat
             ["name"] = $"{DateTime.Now}",
 
             /* How to set session timeout */
-            ["sessionTimeout"] = "15m",
+            ["sessionTimeout"] = "4m",
 
             /* How to set timezone */
             ["env"] = new List<string>() {

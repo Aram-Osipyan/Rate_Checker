@@ -30,52 +30,52 @@ public class EmailCodeEntering : State<StateMachineContext, TriggerEnum, StateEn
 
         /// IMAP
         string messageHtml = "";
-        using (var clientp = new ImapClient())
+        using var clientp = new ImapClient();
+
+        await clientp.ConnectAsync("imap.gmail.com", 993, true);
+        //await clientp.AuthenticateAsync("binancenoviy@gmail.com", "ttxo bfhg yzlu kbxm");
+        await clientp.AuthenticateAsync(context.Input.ImapEmail, context.Input.ImapPassword);
+
+        var inbox = clientp.Inbox;
+        await inbox.OpenAsync(FolderAccess.ReadWrite);
+
+        var ts = new TaskCompletionSource<bool>();
+        await Console.Out.WriteLineAsync($"message count: {inbox.Count}");
+
+        var done = new CancellationTokenSource(new TimeSpan(0, 1, 0));
+
+        inbox.CountChanged += (obj, args) =>
         {
-            await clientp.ConnectAsync("imap.gmail.com", 993, true);
-            //await clientp.AuthenticateAsync("binancenoviy@gmail.com", "ttxo bfhg yzlu kbxm");
-            await clientp.AuthenticateAsync(context.Input.ImapEmail, context.Input.ImapPassword);
+            Console.WriteLine("message count changed");
+            ts.SetResult(true);
+        };
 
-            var inbox = clientp.Inbox;
-            await inbox.OpenAsync(FolderAccess.ReadWrite);
-
-            var ts = new TaskCompletionSource<bool>();
-            await Console.Out.WriteLineAsync($"message count: {inbox.Count}");
-
-            var done = new CancellationTokenSource(new TimeSpan(0, 0, 30));
-
-            inbox.CountChanged += (obj, args) =>
-            {
-                ts.SetResult(true);
-            };
-
-            emailButton.Click();
-            await clientp.IdleAsync(done.Token);
-
+        emailButton.Click();
+        await clientp.IdleAsync(done.Token);
                        
-            await ts.Task;
+        await ts.Task.WaitAsync(TimeSpan.FromSeconds(30));
 
-            var query = SearchQuery.FromContains("Binance")
-                .And(SearchQuery.SubjectContains("Подтверждение входа"))
-                .And(SearchQuery.DeliveredAfter(now));
+        var query = SearchQuery.FromContains("Binance")
+            .And(SearchQuery.SubjectContains("Подтверждение входа"))
+            .And(SearchQuery.DeliveredAfter(now));
 
-            Console.WriteLine("Total messages: {0}", inbox.Count);
-            Console.WriteLine("Recent messages: {0}", inbox.Recent);
+        Console.WriteLine("Total messages: {0}", inbox.Count);
 
-            foreach (var uid in (await inbox.SearchAsync(query)).OrderByDescending(x => x))
-            {
-                var message = await inbox.GetMessageAsync(uid);
-                Console.WriteLine("[match] {0}: {1}", uid, message.Subject);
-                //Console.WriteLine("[body] {0}: {1}", uid, message.HtmlBody);
-                messageHtml = message.HtmlBody;
+        foreach (var uid in (await inbox.SearchAsync(query)).OrderByDescending(x => x))
+        {
+            var message = await inbox.GetMessageAsync(uid);
+            Console.WriteLine("[match] {0}: {1}", uid, message.Subject);
+            //Console.WriteLine("[body] {0}: {1}", uid, message.HtmlBody);
+            messageHtml = message.HtmlBody;
 
-                inbox.AddFlags(uid, MessageFlags.Seen, true);
-                break;
-            }
-
-            await clientp.DisconnectAsync(true);
+            inbox.AddFlags(uid, MessageFlags.Seen, true);
+            break;
         }
+
+        await clientp.DisconnectAsync(true);
+        
         /// /IMAP
+        
 
         string pattern = @"<b>\s*(\d\d\d\d\d\d)\s*<\/b>";
         var emailCode = Regex.Match(messageHtml, pattern).Groups.Values.Skip(1).First().Value;
