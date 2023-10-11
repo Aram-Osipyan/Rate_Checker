@@ -54,9 +54,6 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
                     driver.Close();
                     driver.Quit();
 
-                    string sessionString = (driver as RemoteWebDriver).SessionId.ToString();
-                    RemoveDriverSession(sessionString).Wait();
-
                     network.NetworkRequestSent -= callback;
                     ts.TrySetResult((token, cookie));                    
                 }
@@ -72,9 +69,10 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
             context.Token = result.token;
             context.Cookie = result.cookie;
 
-            
 
-            
+
+            string sessionString = (driver as RemoteWebDriver).SessionId.ToString();
+            RemoveDriverSession(sessionString).Wait();
 
             return TriggerEnum.Success;
         }
