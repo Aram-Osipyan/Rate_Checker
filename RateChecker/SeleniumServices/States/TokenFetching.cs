@@ -50,7 +50,7 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
                     var cookie = req.RequestHeaders["Cookie"];
 
                     network.ClearRequestHandlers();
-                    network.StopMonitoring().Wait();
+                    //network.StopMonitoring().Wait();
 
                     network.NetworkRequestSent -= callback;
                     ts.TrySetResult((token, cookie));                    
@@ -58,6 +58,16 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
             };
 
             network.NetworkRequestSent += callback;
+            network.NetworkResponseReceived += (sender, e) =>
+            {
+                if (e.ResponseUrl == "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search")
+                {
+                    network.StopMonitoring().Wait();
+                }
+            };
+            
+
+
             driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
 
 
