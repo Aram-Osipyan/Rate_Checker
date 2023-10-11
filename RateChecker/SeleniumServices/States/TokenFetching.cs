@@ -51,8 +51,6 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
                     network.ClearRequestHandlers();
                     network.StopMonitoring().Wait();
-                    driver.Close();
-                    driver.Quit();
 
                     network.NetworkRequestSent -= callback;
                     ts.TrySetResult((token, cookie));                    
