@@ -39,11 +39,14 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
             network.StartMonitoring().Wait();
             
 
-            var ts = new TaskCompletionSource<(string token, string cookie)>();
+            var searchReq = new TaskCompletionSource<(string token, string cookie)>();
+            var requestsProccessed = new TaskCompletionSource<bool>();
+            int counter = 0;
 
 
             void callback(object obj, NetworkRequestSentEventArgs req)
             {
+                Interlocked.Increment(ref counter);
                 if (req.RequestUrl == "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search")
                 {
                     var token = req.RequestHeaders["csrftoken"];
@@ -51,17 +54,21 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
                     network.ClearRequestHandlers();
                     //network.StopMonitoring().Wait();
-
+                    
                     network.NetworkRequestSent -= callback;
-                    ts.TrySetResult((token, cookie));                    
+                    searchReq.TrySetResult((token, cookie));                    
                 }
             };
 
             network.NetworkRequestSent += callback;
             network.NetworkResponseReceived += (sender, e) =>
             {
-                if (e.ResponseUrl == "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search")
+                Interlocked.Decrement(ref counter);
+
+
+                if (searchReq.Task.IsCompleted && counter == 0)
                 {
+                    requestsProccessed.TrySetResult(true);
                     network.StopMonitoring().Wait();
                 }
             };
@@ -70,9 +77,11 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
             driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
 
+            Task.Delay(10000).Wait();
+            searchReq.Task.Wait();
+            requestsProccessed.Task.Wait();
 
-            ts.Task.Wait();
-            var result = ts.Task.Result;
+            var result = searchReq.Task.Result;
 
             context.Token = result.token;
             context.Cookie = result.cookie;
