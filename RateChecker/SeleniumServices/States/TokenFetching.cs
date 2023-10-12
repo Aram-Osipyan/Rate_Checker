@@ -40,6 +40,7 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
             
 
             var searchReq = new TaskCompletionSource<(string token, string cookie)>();
+            var requestsProccessed = new TaskCompletionSource<bool>();
             int counter = 0;
 
 
@@ -63,19 +64,22 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
             network.NetworkResponseReceived += (sender, e) =>
             {
                 Interlocked.Decrement(ref counter);
+
+
+                if (searchReq.Task.IsCompleted && counter == 0)
+                {
+                    requestsProccessed.TrySetResult(true);
+                    network.StopMonitoring().Wait();
+                }
             };
             
 
 
             driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
 
-            Task.Delay(15000).Wait();
-
-
-            SpinWait.SpinUntil(() => counter == 0);
-
-            network.StopMonitoring().Wait();
+            Task.Delay(10000).Wait();
             searchReq.Task.Wait();
+            requestsProccessed.Task.Wait();
 
             var result = searchReq.Task.Result;
 
