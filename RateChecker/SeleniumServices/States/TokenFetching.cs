@@ -28,7 +28,7 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
         yesBtn.Click();
 
-        var devTools = (driver as RemoteWebDriver).GetDevToolsSession();
+       
 
         
         await Task.Delay(2000);
@@ -36,7 +36,7 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
         try
         {
             var network = driver.Manage().Network;
-            network.StartMonitoring().Wait();
+            
             
 
             var ts = new TaskCompletionSource<(string token, string cookie)>();
@@ -69,7 +69,11 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
 
             driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
+            await Task.Delay(5000);
 
+            network.StartMonitoring().Wait();
+
+            driver.Navigate().Refresh();
 
             ts.Task.Wait();
             var result = ts.Task.Result;
