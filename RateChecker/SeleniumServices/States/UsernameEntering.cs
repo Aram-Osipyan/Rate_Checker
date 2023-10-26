@@ -19,7 +19,7 @@ public class UsernameEntering : State<StateMachineContext, TriggerEnum, StateEnu
 
         emailInput.SendKeys(email);
 
-        var nextButton = driver.FindElement(By.CssSelector("button#click_login_submit"));
+        var nextButton = driver.FindElement(By.CssSelector("button#click_login_submit_v2"));
 
         nextButton.Click();
 

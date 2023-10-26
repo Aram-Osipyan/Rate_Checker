@@ -29,7 +29,7 @@ public class PasswordEntering : State<StateMachineContext, TriggerEnum, StateEnu
 
         passwordInput.SendKeys(password);
 
-        var loginSubmitBtn = driver.FindElement(By.CssSelector("button#click_login_submit"));
+        var loginSubmitBtn = driver.FindElement(By.CssSelector("button#click_login_submit_v2"));
         loginSubmitBtn.Click();
 
         return TriggerEnum.Success;
