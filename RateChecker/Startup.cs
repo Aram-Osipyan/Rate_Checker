@@ -34,6 +34,7 @@ public sealed class Startup
             .AddSingleton(new CaptureSolving(StateEnum.CaptureSolving))
             .AddSingleton(new UsernameEntering(StateEnum.UsernameEntering))
             .AddSingleton(new EmailCodeEntering(StateEnum.EmailCodeEntering))
+            .AddSingleton(new ImapSubcribe(StateEnum.ImapSubscribing))
             .AddSingleton(new TokenFetching(StateEnum.TokenFetching))
             .AddScoped<IWebDriverLogin, WebDriverLogin>()
             .AddSingleton<IStateMachineFactory, StateMachineFactory>();

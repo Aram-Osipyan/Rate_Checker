@@ -3,5 +3,6 @@ public enum TriggerEnum
 {
     Success,
     Failure,
-    CaptureNotFound
+    CaptureNotFound,
+    SkipAuthenticatorStep,
 }

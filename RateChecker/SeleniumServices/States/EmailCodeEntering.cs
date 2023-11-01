@@ -10,6 +10,8 @@ using System.Globalization;
 using System.Security.Policy;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using System.Threading.Tasks;
+using TaskStatus = System.Threading.Tasks.TaskStatus;
 
 namespace RateChecker.SeleniumServices.States;
 public class EmailCodeEntering : State<StateMachineContext, TriggerEnum, StateEnum>
@@ -23,40 +25,35 @@ public class EmailCodeEntering : State<StateMachineContext, TriggerEnum, StateEn
         var driver = context.Driver;
 
         WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
-
-        var emailButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(".bn-mfa-overview-step-wrapper .bn-mfa-overview-step:nth-child(2)")));
         var now = DateTime.Now;
-        
+        try
+        {
+            var emailButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(".bn-mfa-overview-step-wrapper .bn-mfa-overview-step:nth-child(2)")));
+            emailButton.Click();
+        }
+        catch (Exception e)
+        {
+            await Console.Out.WriteLineAsync(e.Message);
+        }      
+
 
         /// IMAP
         string messageHtml = "";
-        using var clientp = new ImapClient();
+        using var clientp = context.ImapClient;
+        var inbox = context.Inbox;
 
-        await clientp.ConnectAsync("imap.gmail.com", 993, true);
-        //await clientp.AuthenticateAsync("binancenoviy@gmail.com", "ttxo bfhg yzlu kbxm");
-        await clientp.AuthenticateAsync(context.Input.ImapEmail, context.Input.ImapPassword);
-
-        var inbox = clientp.Inbox;
-        await inbox.OpenAsync(FolderAccess.ReadWrite);
-
-        var ts = new TaskCompletionSource<bool>();
-        await Console.Out.WriteLineAsync($"message count: {inbox.Count}");
-
-        var done = new CancellationTokenSource(new TimeSpan(0, 1, 0));
-
-        inbox.CountChanged += (obj, args) =>
+        if (context.IdleTask.Status == TaskStatus.Running || context.IdleTask.Status == TaskStatus.WaitingForActivation)
         {
-            Console.WriteLine("message count changed");
-            ts.SetResult(true);
-        };
+            context.IdleTask.Wait();
+        }
 
-        emailButton.Click();
-        await clientp.IdleAsync(done.Token);
-                       
-        await ts.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        if (context.ImapMessageWaiter.Task.Status == System.Threading.Tasks.TaskStatus.Running)
+        {
+            await context.ImapMessageWaiter.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        }
 
         var query = SearchQuery.FromContains("Binance")
-            .And(SearchQuery.SubjectContains("Подтверждение входа"))
+            //.And(SearchQuery.Or(SearchQuery.SubjectContains("Подтверждение входа"), SearchQuery.SubjectContains("Login Verification")))
             .And(SearchQuery.DeliveredAfter(now));
 
         Console.WriteLine("Total messages: {0}", inbox.Count);
@@ -72,12 +69,15 @@ public class EmailCodeEntering : State<StateMachineContext, TriggerEnum, StateEn
             break;
         }
 
-        await clientp.DisconnectAsync(true);
+        if (clientp is not null)
+        {
+            await clientp?.DisconnectAsync(true);
+        }        
         
         /// /IMAP
         
 
-        string pattern = @"<b>\s*(\d\d\d\d\d\d)\s*<\/b>";
+        string pattern = @"<strong>\s*(\d\d\d\d\d\d)\s*<\/strong>";
         var emailCode = Regex.Match(messageHtml, pattern).Groups.Values.Skip(1).First().Value;
 
         var emailCodeInput = wait.Until(d => d.FindElement(By.CssSelector("input.bn-textField-input")));

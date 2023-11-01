@@ -8,4 +8,5 @@ public enum StateEnum
     AuthenticatorCodeEntering,
     EmailCodeEntering,
     TokenFetching,
+    ImapSubscribing,
 }

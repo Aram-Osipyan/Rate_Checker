@@ -36,13 +36,17 @@ public class StateMachineFactory : IStateMachineFactory
         var authenticatorCodeEntering = _serviceProvider.GetService<AuthenticatorCodeEntering>();
         var emailCodeEntering = _serviceProvider.GetService<EmailCodeEntering>();
         var tokenFetching = _serviceProvider.GetService<TokenFetching>();
+        var imapSubscriber = _serviceProvider.GetService<ImapSubcribe>();
 
         _stateMachine.Configure(driverInitialization, usernameEntering, TriggerEnum.Success);
         _stateMachine.Configure(usernameEntering, captureSolving, TriggerEnum.Success);
-        _stateMachine.Configure(captureSolving, passwordEntering, TriggerEnum.Success);
-        _stateMachine.Configure(captureSolving, passwordEntering, TriggerEnum.CaptureNotFound);
+        _stateMachine.Configure(captureSolving, imapSubscriber, TriggerEnum.Success);
+        _stateMachine.Configure(captureSolving, imapSubscriber, TriggerEnum.CaptureNotFound);
+
+        _stateMachine.Configure(imapSubscriber, passwordEntering, TriggerEnum.Success);
         _stateMachine.Configure(passwordEntering, authenticatorCodeEntering, TriggerEnum.Success);
         _stateMachine.Configure(authenticatorCodeEntering, emailCodeEntering, TriggerEnum.Success);
+        _stateMachine.Configure(authenticatorCodeEntering, emailCodeEntering, TriggerEnum.SkipAuthenticatorStep);
         _stateMachine.Configure(emailCodeEntering, tokenFetching, TriggerEnum.Success);
     }
 }
