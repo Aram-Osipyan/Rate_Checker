@@ -96,9 +96,16 @@ public class DriverInitialization : State<StateMachineContext, TriggerEnum, Stat
 
         WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
 
-        var cookieButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button#onetrust-accept-btn-handler")));
+        try
+        {
+            var cookieButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button#onetrust-accept-btn-handler")));
 
-        cookieButton.Submit();
+            cookieButton.Submit();
+        }
+        catch (Exception ex)
+        {
+            await Console.Out.WriteLineAsync(ex.Message);
+        }
 
         context.Driver = driver;
 
