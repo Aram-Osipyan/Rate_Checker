@@ -80,7 +80,7 @@ public class EmailCodeEntering : State<StateMachineContext, TriggerEnum, StateEn
         string pattern = @"<strong>\s*(\d\d\d\d\d\d)\s*<\/strong>";
         var emailCode = Regex.Match(messageHtml, pattern).Groups.Values.Skip(1).First().Value;
 
-        var emailCodeInput = wait.Until(d => d.FindElement(By.CssSelector("input.bn-textField-input")));
+        var emailCodeInput = wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("input[data-e2e=\"input-mfa\"]")));
         emailCodeInput.SendKeys(emailCode);
 
         // TODO: wait for page loading
