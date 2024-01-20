@@ -28,14 +28,14 @@ public sealed class Startup
                 connectionString,
                 typeof(SqlMigration).Assembly);*/
         services
-            .AddSingleton(new AuthenticatorCodeEntering(StateEnum.AuthenticatorCodeEntering))
-            .AddSingleton(new DriverInitialization(StateEnum.DriverInitialization))
-            .AddSingleton(new PasswordEntering(StateEnum.PasswordEntering))
-            .AddSingleton(new CaptureSolving(StateEnum.CaptureSolving))
-            .AddSingleton(new UsernameEntering(StateEnum.UsernameEntering))
-            .AddSingleton(new EmailCodeEntering(StateEnum.EmailCodeEntering))
-            .AddSingleton(new ImapSubcribe(StateEnum.ImapSubscribing))
-            .AddSingleton(new TokenFetching(StateEnum.TokenFetching))
+            .AddTransient(x => new AuthenticatorCodeEntering(StateEnum.AuthenticatorCodeEntering))
+            .AddTransient(x => new DriverInitialization(StateEnum.DriverInitialization))
+            .AddTransient(x => new PasswordEntering(StateEnum.PasswordEntering))
+            .AddTransient(x => new CaptureSolving(StateEnum.CaptureSolving))
+            .AddTransient(x => new UsernameEntering(StateEnum.UsernameEntering))
+            .AddTransient(x => new EmailCodeEntering(StateEnum.EmailCodeEntering))
+            .AddTransient(x => new ImapSubcribe(StateEnum.ImapSubscribing))
+            .AddTransient(x => new TokenFetching(StateEnum.TokenFetching))
             .AddScoped<IWebDriverLogin, WebDriverLogin>()
             .AddSingleton<IStateMachineFactory, StateMachineFactory>();
         

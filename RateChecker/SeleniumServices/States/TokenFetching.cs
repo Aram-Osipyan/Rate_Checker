@@ -36,11 +36,10 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
         try
         {
             var network = driver.Manage().Network;
-            
-            
+
+
 
             var ts = new TaskCompletionSource<(string token, string cookie)>();
-
 
             void callback(object obj, NetworkRequestSentEventArgs req)
             {
@@ -69,13 +68,29 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
 
             driver.Navigate().GoToUrl("https://p2p.binance.com/ru/trade/all-payments/USDT?fiat=RUB");
-            await Task.Delay(5000);
-
-            network.StartMonitoring().Wait();
-
             driver.Navigate().Refresh();
 
+
+
+            // confirm "input[name=\"password\"]"
+            var checkbox = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("label.css-o78533")));
+            checkbox.Click();
+            var confirmButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.css-gyhchg")));
+            confirmButton.Click();
+
+            // choose rub option
+            var listElem = wait.Until((ExpectedConditions.ElementIsVisible(By.CssSelector("div.css-11ho4jc"))));
+
+            listElem.Click();
+
+            var rubOption = wait.Until(d => d.FindElement(By.CssSelector("li#RUB")));
+            await network.StartMonitoring();
+
+
+            rubOption.Click();
+
             ts.Task.Wait();
+
             var result = ts.Task.Result;
 
             context.Token = result.token;
@@ -83,8 +98,9 @@ public class TokenFetching : State<StateMachineContext, TriggerEnum, StateEnum>
 
             return TriggerEnum.Success;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            await Console.Out.WriteLineAsync(ex.Message);
             return TriggerEnum.Failure;
         }
     }

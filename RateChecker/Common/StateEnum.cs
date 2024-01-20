@@ -5,6 +5,7 @@ public enum StateEnum
     UsernameEntering,
     PasswordEntering,
     CaptureSolving,
+    CaptureSolving2,
     AuthenticatorCodeEntering,
     EmailCodeEntering,
     TokenFetching,

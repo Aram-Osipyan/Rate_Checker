@@ -5,7 +5,7 @@ public abstract class State<Context, TriggerEnum, StateEnum>
     where TriggerEnum : System.Enum                                                             
     where StateEnum : System.Enum
 {
-    public StateEnum stateEnum { get; init; }
+    public StateEnum stateEnum { get; set; }
 
     public State(StateEnum stateEnum)
     {
